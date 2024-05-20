@@ -1,1 +1,1 @@
-# FitTrack
+This repository contains the source code for the backend service of a fitness application, developed in Go using the Gin web framework. It sets up an HTTP server that listens on port 8080, providing a RESTful API for managing fitness activities. The available endpoints support creating, retrieving, updating, and deleting fitness activities, facilitating easy management of user fitness data. This service is designed to be scalable, efficient, and easily integrable with front-end applications or other services to create a comprehensive fitness tracking system.
