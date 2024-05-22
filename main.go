@@ -11,63 +11,63 @@ import (
 type FitnessActivity struct {
 	ID     string `json:"id"`
 	Name   string `json:"name"`
-	Length int    `json:"length"`
+	Duration int    `json:"duration"`
 }
 
-var activities = make([]FitnessActivity, 0)
+var fitnessActivitiesList = make([]FitnessActivity, 0)
 
-func getActivities(c *gin.Context) {
-	c.JSON(http.StatusOK, activities)
+func fetchAllActivities(c *gin.Context) {
+	c.JSON(http.StatusOK, fitnessActivitiesList)
 }
 
-func getActivity(c *gin.Context) {
+func fetchSingleActivity(c *gin.Context) {
 	id := c.Param("id")
-	for _, a := range activities {
-		if a.ID == id {
-			c.JSON(http.StatusOK, a)
+	for _, activity := range fitnessActivitiesList {
+		if activity.ID == id {
+			c.JSON(http.StatusOK, activity)
 			return
 		}
 	}
-	c.JSON(http.StatusNotFound, gin.H{"message": "activity not found"})
+	c.JSON(http.StatusNotFound, gin.H{"message": "Activity not found"})
 }
 
-func createActivity(c *gin.Context) {
-	var newActivity FitnessActivity
-	if err := c.ShouldBindJSON(&newActivity); err != nil {
+func createNewActivity(c *gin.Context) {
+	var newFitnessActivity FitnessActivity
+	if err := c.ShouldBindJSON(&newFitnessActivity); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	activities = append(activities, newActivity)
-	c.JSON(http.StatusCreated, newActivity)
+	fitnessActivitiesList = append(fitnessActivitiesList, newFitnessActivity)
+	c.JSON(http.StatusCreated, newFitnessActivity)
 }
 
-func updateActivity(c *gin.Context) {
+func modifyActivity(c *gin.Context) {
 	id := c.Param("id")
-	var updatedActivity FitnessActivity
-	if err := c.ShouldBindJSON(&updatedActivity); err != nil {
+	var updatedFitnessActivity FitnessActivity
+	if err := c.ShouldBindJSON(&updatedFitnessActivity); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	for i, a := range activities {
-		if a.ID == id {
-			activities[i] = updatedActivity
-			c.JSON(http.StatusOK, updatedActivity)
+	for i, activity := range fitnessActivitiesList {
+		if activity.ID == id {
+			fitnessActivitiesList[i] = updatedFitnessActivity
+			c.JSON(http.StatusOK, updatedFitnessActivity)
 			return
 		}
 	}
-	c.JSON(http.StatusNotFound, gin.H{"message": "activity not found"})
+	c.JSON(http.StatusNotFound, gin.H{"message": "Activity not found"})
 }
 
-func deleteActivity(c *gin.Context) {
+func removeActivity(c *gin.Context) {
 	id := c.Param("id")
-	for i, a := range activities {
-		if a.ID == id {
-			activities = append(activities[:i], activities[i+1:]...)
-			c.JSON(http.StatusOK, gin.H{"message": "activity deleted"})
+	for i, activity := range fitnessActivitiesList {
+		if activity.ID == id {
+			fitnessActivitiesList = append(fitnessActivitiesList[:i], fitnessActivitiesList[i+1:]...)
+			c.JSON(http.StatusOK, gin.H{"message": "Activity deleted"})
 			return
 		}
 	}
-	c.JSON(http.StatusNotFound, gin.H{"message": "activity not found"})
+	c.JSON(http.StatusNotFound, gin.H{"message": "Activity not found"})
 }
 
 func main() {
@@ -82,11 +82,11 @@ func main() {
 
 	router := gin.Default()
 
-	router.GET("/activities", getActivities)
-	router.GET("/activities/:id", getActivity)
-	router.POST("/activities", createActivity)
-	router.PUT("/activities/:id", updateActivity)
-	router.DELETE("/activities/:id", deleteActivity)
+	router.GET("/activities", fetchAllActivities)
+	router.GET("/activities/:id", fetchSingleActivity)
+	router.POST("/activities", createNewActivity)
+	router.PUT("/activities/:id", modifyActivity)
+	router.DELETE("/activities/:id", removeActivity)
 
 	router.Run(":" + port)
 }
