@@ -16,13 +16,13 @@ type FitnessActivity struct {
 
 var fitnessActivitiesList = make([]FitnessActivity, 0)
 
-func findActivityIndexByID(id string) int {
+func findActivityIndexByID(id string) (int, error) {
     for i, activity := range fitnessActivitiesList {
         if activity.ID == id {
-            return i
+            return i, nil
         }
     }
-    return -1
+    return -1, gin.Error{Err: nil, Type: gin.ErrorTypePublic, Meta: "Activity not found"}
 }
 
 func fetchAllActivities(c *gin.Context) {
@@ -31,12 +31,12 @@ func fetchAllActivities(c *gin.Context) {
 
 func fetchSingleActivity(c *gin.Context) {
     id := c.Param("id")
-    index := findActivityIndexByID(id)
-    if index != -1 {
-        c.JSON(http.StatusOK, fitnessActivitiesList[index])
+    index, err := findActivityIndexByID(id)
+    if err != nil {
+        c.JSON(http.StatusNotFound, gin.H{"message": err.Error()})
         return
     }
-    c.JSON(http.StatusNotFound, gin.H{"message": "Activity not found"})
+    c.JSON(http.StatusOK, fitnessActivitiesList[index])
 }
 
 func createNewActivity(c *gin.Context) {
@@ -56,25 +56,24 @@ func modifyActivity(c *gin.Context) {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
     }
-    index := findActivityIndexByID(id)
-    if index != -1 {
-        fitnessActivitiesList[index] = updatedFitnessActivity
-        c.JSON(http.StatusOK, updatedFitnessActivity)
+    index, err := findActivityIndexByID(id)
+    if err != nil {
+        c.JSON(http.StatusNotFound, gin.H{"message": err.Error()})
         return
     }
-    c.JSON(http.StatusNotFound, gin.H{"message": "Activity not found"})
+    fitnessActivitiesList[index] = updatedFitnessActivity
+    c.JSON(http.StatusOK, updatedFitnessActivity)
 }
 
 func removeActivity(c *gin.Context) {
     id := c.Param("id")
-    index := findActivityIndexByID(id)
-    if index != -1 {
-        fitnessActivitiesList[index] = fitnessActivitiesList[len(fitnessActivitiesList)-1]
-        fitnessActivitiesList = fitnessActivitiesList[:len(fitnessActivitiesList)-1]
-        c.JSON(http.StatusOK, gin.H{"message": "Activity deleted"})
+    index, err := findActivityIndexByID(id)
+    if err != nil {
+        c.JSON(http.StatusNotFound, gin.H{"message": err.Error()})
         return
     }
-    c.JSON(http.StatusNotFound, gin.H{"message": "Activity not found"})
+    fitnessActivitiesList = append(fitnessActivitiesList[:index], fitnessActivitiesList[index+1:]...)
+    c.JSON(http.StatusOK, gin.H{"message": "Activity deleted"})
 }
 
 func main() {
