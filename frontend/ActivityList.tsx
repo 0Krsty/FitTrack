@@ -1,38 +1,38 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchActivities, deleteActivity } from './activitiesSlice';
+import { fetchAllActivities, removeActivityById } from './activitiesSlice';
 import { RootState } from './store';
 
-interface Activity {
+interface FitnessActivity {
   id: string;
   name: string;
   duration: string;
   date: string;
 }
 
-const FitnessActivities: React.FC = () => {
+const FitnessActivitiesList: React.FC = () => {
   const dispatch = useDispatch();
-  const activities = useSelector((state: RootState) => state.activities.list);
+  const fitnessActivities = useSelector((state: RootState) => state.activities.list);
 
   useEffect(() => {
-    dispatch(fetchActivities());
+    dispatch(fetchAllActivities());
   }, [dispatch]);
 
-  const handleDelete = (id: string) => {
-    dispatch(deleteActivity(id));
+  const handleActivityDeletion = (activityId: string) => {
+    dispatch(removeActivityById(activityId));
   }
 
   return (
     <div>
       <h2>Fitness Activities List</h2>
       <ul>
-        {activities.map((activity: Activity) => (
+        {fitnessActivities.map((activity: FitnessActivity) => (
           <li key={activity.id}>
             <p>Name: {activity.name}</p>
             <p>Duration: {activity.duration}</p>
             <p>Date: {activity.date}</p>
             <button onClick={() => {}}>Edit</button>
-            <button onClick={() => handleDelete(activity.id)}>Delete</button>
+            <button onClick={() => handleActivityDeletion(activity.id)}>Delete</button>
           </li>
         ))}
       </ul>
@@ -40,4 +40,4 @@ const FitnessActivities: React.FC = () => {
   );
 };
 
-export default FitnessActivities;
+export default FitnessActivitiesList;
