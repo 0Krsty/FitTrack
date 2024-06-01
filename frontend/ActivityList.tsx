@@ -12,27 +12,27 @@ interface FitnessActivity {
 
 const FitnessActivitiesList: React.FC = () => {
   const dispatch = useDispatch();
-  const fitnessActivities = useSelector((state: RootState) => state.activities.list);
+  const activitiesList = useSelector((state: RootState) => state.activities.list);
 
   useEffect(() => {
     dispatch(fetchAllActivities());
   }, [dispatch]);
 
-  const handleActivityDeletion = (activityId: string) => {
+  const handleDeleteActivity = (activityId: string) => {
     dispatch(removeActivityById(activityId));
   }
 
   return (
     <div>
-      <h2>Fitness Activities List</h2>
+      <h2>Fitness Activities</h2>
       <ul>
-        {fitnessActivities.map((activity: FitnessActivity) => (
+        {activitiesList.map((activity: FitnessActivity) => (
           <li key={activity.id}>
             <p>Name: {activity.name}</p>
             <p>Duration: {activity.duration}</p>
             <p>Date: {activity.date}</p>
-            <button onClick={() => {}}>Edit</button>
-            <button onClick={() => handleActivityDeletion(activity.id)}>Delete</button>
+            <button onClick={() => {}}>Edit</button> 
+            <button onClick={() => handleDeleteActivity(activity.id)}>Delete</button>
           </li>
         ))}
       </ul>
