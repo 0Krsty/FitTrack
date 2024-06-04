@@ -1,54 +1,15 @@
-// src/App.tsx
-
-import React from 'react';
-
-// Hypothetical complex function
-const calculateFitnessProgress = (steps: number, goal: number) => {
-  const percentageOfGoalReached = (steps / goal) * 100;
-  let status = '';
-  
-  if (percentageOfGoalReached < 50) {
-    status = 'Keep going, you are getting there!';
-  } else if (percentageOfGoalReached < 80) {
-    status = 'Awesome, you are more than halfway there!';
-  } else if (percentageOfGoalReached < 100) {
-    status = 'Almost there, keep pushing!';
-  } else {
-    status = 'Congratulations, you reached your goal!';
-  }
-
-  return { percentageOfGoalReached, status };
-};
-
-const App: React.FC = () => {
-  const steps = 9000;
-  const goal = 10000;
-  const { percentageOfGoalReached, status } = calculateFitnessProgress(steps, goal);
-
-  return (
-    <div>
-      <h1>FitTrack</h1>
-      <p>Your progress: {percentageOfGoalReached.toFixed(2)}%</p>
-      <p>Status: {status}</p>
-    </div>
-  );
-};
-
-export default App;
-```
-```typescript
 // src/utils/fitnessCalculations.ts
 
-export const calculateProgressPercentage = (current: number, goal: number): number => {
-  return (current / goal) * 100;
+export const calculatePercentageOfGoal = (currentSteps: number, totalGoal: number): number => {
+  return (currentSteps / totalGoal) * 100;
 };
 
-export const getStatusMessage = (percentageOfGoalReached: number): string => {
-  if (percentageOfGoalReached < 50) {
+export const determineProgressStatus = (percentAchieved: number): string => {
+  if (percentAchieved < 50) {
     return 'Keep going, you are getting there!';
-  } else if (percentageOfGoalReached < 80) {
+  } else if (percentAchieved < 80) {
     return 'Awesome, you are more than halfway there!';
-  } else if (percentageOfGoalReached < 100) {
+  } else if (percentAchieved < 100) {
     return 'Almost there, keep pushing!';
   }
   return 'Congratulations, you reached your goal!';
@@ -57,20 +18,21 @@ export const getStatusMessage = (percentageOfGoalReached: number): string => {
 ```typescript
 // src/App.tsx
 import React from 'react';
-import { calculateProgressPercentage, getStatusMessage } from './utils/fitnessCalculations';
+import { calculatePercentageOfGoal, determineProgressStatus } from './utils/fitnessCalculations';
 
 const App: React.FC = () => {
-  const steps = 9000;
-  const goal = 10000;
+  // Example input data
+  const currentSteps = 9000;
+  const dailyGoal = 10000;
 
-  const percentageOfGoalReached = calculateProgressPercentage(steps, goal);
-  const status = getStatusMessage(percentageOfGoalReached);
+  const percentageOfGoalAchieved = calculatePercentageOfGoal(currentSteps, dailyGoal);
+  const progressStatus = determineProgressStatus(percentageOfGoalAchieved);
 
   return (
     <div>
       <h1>FitTrack</h1>
-      <p>Your progress: {percentageOfGoalReached.toFixed(2)}%</p>
-      <p>Status: {status}</p>
+      <p>Your progress: {percentageOfGoalAchieved.toFixed(2)}%</p>
+      <p>Status: {progressStatus}</p>
     </div>
   );
 };
