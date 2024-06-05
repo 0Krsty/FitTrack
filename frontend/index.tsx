@@ -1,10 +1,22 @@
 // src/utils/fitnessCalculations.ts
 
 export const calculatePercentageOfGoal = (currentSteps: number, totalGoal: number): number => {
+  if (totalGoal <= 0) {
+    throw new Error('Total goal must be greater than 0.');
+  }
+
+  if (currentSteps < 0) {
+    throw new Error('Current steps cannot be negative.');
+  }
+
   return (currentSteps / totalGoal) * 100;
 };
 
 export const determineProgressStatus = (percentAchieved: number): string => {
+  if (percentAchieved < 0) {
+    throw new Error('Percentage achieved cannot be negative.');
+  }
+
   if (percentAchieved < 50) {
     return 'Keep going, you are getting there!';
   } else if (percentAchieved < 80) {
@@ -14,19 +26,31 @@ export const determineProgressStatus = (percentAchieved: number): string => {
   }
   return 'Congratulations, you reached your goal!';
 };
-```
-```typescript
+
 // src/App.tsx
 import React from 'react';
 import { calculatePercentageOfGoal, determineProgressStatus } from './utils/fitnessCalculations';
 
 const App: React.FC = () => {
-  // Example input data
   const currentSteps = 9000;
   const dailyGoal = 10000;
 
-  const percentageOfGoalAchieved = calculatePercentageOfGoal(currentSteps, dailyGoal);
-  const progressStatus = determineProgressStatus(percentageOfGoalAchieved);
+  let percentageOfGoalAchieved = 0;
+  let progressStatus = '';
+
+  try {
+    percentageOfGoalAchieved = calculatePercentageOfGoal(currentSteps, dailyGoal);
+    progressSatus = determineProgressStatus(percentageOfGoalAchieved);
+  } catch (error) {
+    if (error instanceof Error) {
+      return (
+        <div>
+          <h1>FitTrack</h1>
+          <p>Error: {error.message}</p>
+        </div>
+      );
+    }
+  }
 
   return (
     <div>
