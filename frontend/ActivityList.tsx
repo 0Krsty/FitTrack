@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchAllActivities, removeActivityById } from './activitiesSlice';
 import { RootState } from './store';
@@ -10,6 +10,8 @@ interface FitnessActivity {
   date: string;
 }
 
+const useDeleteActivityHandler = (dispatch) => (activityId: string) => () => dispatch(removeActivityById(activityId));
+
 const FitnessActivitiesList: React.FC = () => {
   const dispatch = useDispatch();
   const activitiesList = useSelector((state: RootState) => state.activities.list);
@@ -19,13 +21,15 @@ const FitnessActivitiesList: React.FC = () => {
     dispatch(fetchAllActivities());
   }, [dispatch]);
 
-  const handleDeleteActivity = (activityId: string) => {
-    dispatch(removeActivityById(activityId));
-  };
+  const handleDeleteActivity = useDeleteActivityHandler(dispatch);
 
-  const filteredActivities = activitiesList.filter(activity =>
+  const filteredActivities = useMemo(() => activitiesList.filter(activity =>
     activity.name.toLowerCase().includes(filter.toLowerCase())
-  );
+  ), [activitiesList, filter]);
+
+  const handleFilterChange = useCallback((event) => {
+    setFilter(event.target.value);
+  }, []);
 
   return (
     <div>
@@ -34,7 +38,7 @@ const FitnessActivitiesList: React.FC = () => {
         type="text"
         placeholder="Filter activities by name..."
         value={filter}
-        onChange={(e) => setFilter(e.target.value)}
+        onChange={handleFilterChange}
       />
       <ul>
         {filteredActivities.map((activity: FitnessActivity) => (
@@ -42,8 +46,8 @@ const FitnessActivitiesList: React.FC = () => {
             <p>Name: {activity.name}</p>
             <p>Duration: {activity.duration}</p>
             <p>Date: {activity.date}</p>
-            <button onClick={() => {}}>Edit</button>
-            <button onClick={() => handleDeleteActivity(activity.id)}>Delete</button>
+            <button>Edit</button>
+            <button onClick={handleDeleteActivity(activity.id)}>Delete</button>
           </li>
         ))}
       </ul>
@@ -51,4 +55,4 @@ const FitnessActivitiesList: React.FC = () => {
   );
 };
 
-export default FitnessActivitiesList;
+export default React.memo(FitnessActivitiesList);
