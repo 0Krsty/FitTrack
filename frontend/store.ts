@@ -1,20 +1,25 @@
 // src/middleware/apiBatcher.ts
-export const apiBatcher = (store: any) => (next: any) => (action: any) => {
-  // Your logic to batch API calls
-  // For example, collecting actions for a specified time before dispatching
-  console.log('API Batching Middleware', action);
+
+function logMessage(message: string, data: any) {
+  console.log(`${message}:`, data);
+}
+
+export const apiBatcher = (store: any) => (next: any) (action: any) => {
+  logMessage('API Batching Middleware triggered with action', action);
+
   next(action);
 };
 ```
 
 ```typescript
+// src/store/setupStore.ts
 import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
 import { combineReducers } from 'redux';
 import fitnessReducer from './slices/fitnessSlice';
-import { apiBatcher } from './middleware/apiBatcher'; // make sure the path is correct
+import { apiBatcher } from './middleware/apiBatcher';
 
 const rootReducer = combineReducers({
-  fitness: fitnessReducer,
+    fitness: fitnessReducer,
 });
 
 export const setupStore = () => {
