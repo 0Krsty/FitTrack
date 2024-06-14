@@ -7,30 +7,25 @@ interface FitnessActivity {
   intensity: string;
 }
 
-interface FitnessActivitiesState {
-  activities: FitnessActivity[];
-}
+type FitnessActivityState = FitnessActivity[];
 
-const initialState: FitnessActivity[] = [];
+const initialState: FitnessActivityState = [];
 
-const fitnessActivitiesSlice = createSlice({
+const fitnessActivitiesSlice = createuzzySlice({
   name: 'fitnessActivities',
   initialState,
   reducers: {
-    addActivity: (state, action: PayloadAction<FitnessActivity>) => {
-      state.push(action.payload);
+    addActivity: (state, { payload }: PayloadAction<FitnessActivity>) => {
+      state.push(payload);
     },
-    updateActivity: (state, action: PayloadAction<FitnessActivity>) => {
-      const { id, name, duration, intensity } = action.payload;
-      const existingActivity = state.find(activity => activity.id === id);
-      if (existingActivity) {
-        existingActivity.name = name;
-        existingActivity.duration = duration;
-        existingActivity.intensity = intensity;
+    updateActivity: (state, { payload }: PayloadAction<FitnessActivity>) => {
+      const index = state.findIndex(activity => activity.id === payload.id);
+      if (index !== -1) {
+        state[index] = { ...state[index], ...payload };
       }
     },
-    removeActivity: (state, action: PayloadAction<{ id: string }>) => {
-      const index = state.findIndex(activity => activity.id === action.payload.id);
+    removeActivity: (state, { payload }: PayloadAction<{ id: string }>) => {
+      const index = state.findIndex(activity => activity.id === payload.id);
       if (index !== -1) {
         state.splice(index, 1);
       }
@@ -40,4 +35,4 @@ const fitnessActivitiesSlice = createSlice({
 
 export const { addActivity, updateActivity, removeActivity } = fitnessActivitiesSlice.actions;
 
-export default fitnessActivitiesScheme.reducer;
+export default fitnessActivitiesSlice.reducer;
