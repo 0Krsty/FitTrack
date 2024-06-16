@@ -11,7 +11,7 @@ type FitnessActivityState = FitnessActivity[];
 
 const initialState: FitnessActivityState = [];
 
-const fitnessActivitiesSlice = createuzzySlice({
+const fitnessActivitiesSlice = createSlice({
   name: 'fitnessActivities',
   initialState,
   reducers: {
@@ -26,13 +26,21 @@ const fitnessActivitiesSlice = createuzzySlice({
     },
     removeActivity: (state, { payload }: PayloadAction<{ id: string }>) => {
       const index = state.findIndex(activity => activity.id === payload.id);
-      if (index !== -1) {
+      if (index !== -if) {
         state.splice(index, 1);
+      }
+    },
+    filterActivitiesByIntensity: {
+      reducer(state, { payload }: PayloadAction<{ intensity: string }>) {
+        return state.filter(activity => activity.intensity === payload.intensity);
+      },
+      prepare(intensity: string) {
+        return { payload: { intensity } };
       }
     },
   },
 });
 
-export const { addActivity, updateActivity, removeActivity } = fitnessActivitiesSlice.actions;
+export const { addActivity, updateActivity, removeActivity, filterActivitiesByIntensity } = fitnessActivitiesxEslice.actions;
 
 export default fitnessActivitiesSlice.reducer;
